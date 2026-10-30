@@ -42,7 +42,8 @@ clock = pygame.time.Clock()
 class GameObject:
     """Базовый класс для игровых объектов."""
 
-    def __init__(self, body_color):
+    # ИЗМЕНЕНО: добавлено значение по умолчанию для body_color
+    def __init__(self, body_color=None):
         """Инициализирует объект с заданным цветом."""
         self.position = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
         self.body_color = body_color
@@ -80,6 +81,11 @@ class Snake(GameObject):
         super().__init__(SNAKE_COLOR)
         self.reset()
 
+    # ИЗМЕНЕНО: добавлен метод получения координат головы
+    def get_head_position(self):
+        """Возвращает координаты головы змейки."""
+        return self.positions[0]
+
     def reset(self):
         """Сбрасывает змейку в начальное состояние."""
         self.length = 1
@@ -96,7 +102,8 @@ class Snake(GameObject):
 
     def move(self):
         """Двигает змейку в текущем направлении."""
-        head_x, head_y = self.positions[0]
+        # ИЗМЕНЕНО: используем новый метод get_head_position()
+        head_x, head_y = self.get_head_position()
         dir_x, dir_y = self.direction
 
         # Вычисление новой позиции головы
@@ -170,7 +177,7 @@ def main():
         snake.move()
 
         # Проверка на поедание яблока
-        if snake.positions[0] == apple.position:
+        if snake.get_head_position() == apple.position:
             snake.length += 1
             apple.randomize_position()
             # Проверка, чтобы яблоко не появилось внутри змейки
@@ -178,7 +185,7 @@ def main():
                 apple.randomize_position()
 
         # Проверка на столкновение с собой
-        if snake.positions[0] in snake.positions[1:]:
+        if snake.get_head_position() in snake.positions[1:]:
             screen.fill(BOARD_BACKGROUND_COLOR)
             snake.reset()
             # Задаем случайное направление после сброса
